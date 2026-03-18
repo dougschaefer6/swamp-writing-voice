@@ -67,12 +67,6 @@ Good reference documents to start with:
 - Shorter annotated excerpts that call out specific voice mechanics (how you handle a deviation from an RFP requirement, how you frame competitive positioning without naming competitors, how you acknowledge complexity before landing the outcome)
 - Examples at different tiers showing how the same organization sounds at full personality versus polished professional versus formal contract language
 
-## The Desktop Bridge
-
-If you're running Claude Desktop connected to Claude Code via the MCP bridge, the person who owns the voice can maintain it conversationally. Talk to Desktop about what you like, what you hate, how you'd phrase something differently, tell it to write those preferences into the model definition, and the changes are immediately available to Claude Code and everyone who pulls the repo.
-
-This is not a one-time setup that slowly drifts out of date while your actual voice evolves. This is a living data set maintained by the person closest to it, using a conversational interface, with version control and audit trail built in because it's swamp data in a git repo. Every edit is tracked, every version is recoverable, and the voice definition distributes to the team the same way code does.
-
 ## Schema
 
 Two methods, intentionally simple:
@@ -88,7 +82,7 @@ Voice profiles keep 5 versions, references keep 3, both with infinite lifetime. 
 
 Most AI writing tools treat voice as a prompt engineering problem and most organizations treat voice as a marketing problem. Neither approach works when you have a team of people using AI to generate documents that all need to sound like the same organization wrote them. You end up with five different people pasting five different prompt fragments and getting five different voices, none of which sound like yours.
 
-This extension treats voice as what it actually is: an infrastructure problem. The definition lives in swamp as structured data with a schema, methods, and versioning. It loads when relevant, distributes through git, evolves conversationally through the Desktop bridge, and every version is auditable. The AI isn't guessing at your voice from a prompt fragment. It's reading a complete structured definition backed by real examples of your writing at its best.
+This extension treats voice as what it actually is: an infrastructure problem. The definition lives in swamp as structured data with a schema, methods, and versioning. It loads when relevant, distributes through git, and every version is auditable. The AI isn't guessing at your voice from a prompt fragment. It's reading a complete structured definition backed by real examples of your writing at its best.
 
 ## License
 

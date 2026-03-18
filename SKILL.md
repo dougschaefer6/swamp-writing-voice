@@ -98,9 +98,8 @@ content. Apply all voice rules simultaneously:
 
 ## Updating the Voice
 
-Voice updates go through Claude Desktop via the MCP bridge, or by editing the
-model instance YAML directly. After any change to globalArguments, regenerate
-the data output:
+After any change to the model instance's globalArguments, regenerate the data
+output:
 
 ```bash
 swamp model method run <instance-name> get --json
