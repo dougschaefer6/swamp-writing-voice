@@ -1,7 +1,7 @@
 import { z } from "npm:zod@4";
 
 /**
- * @user/writing-voice — Organizational writing voice management
+ * @dougschaefer/writing-voice — Organizational writing voice management
  */
 
 const TierSchema = z.object({
@@ -56,7 +56,7 @@ const VoiceProfileSchema = z.object({
 }).passthrough();
 
 export const model = {
-  type: "@user/writing-voice",
+  type: "@dougschaefer/writing-voice",
   version: "2026.03.18.3",
   globalArguments: VoiceGlobalArgsSchema,
   resources: {
