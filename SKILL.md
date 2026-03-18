@@ -18,124 +18,70 @@ triggers:
 
 # Writing Voice
 
-This skill defines the canonical writing voice for all client-facing documents produced by this organization. It is the foundation layer that other domain-specific skills build on.
+This skill loads the organizational voice profile from the `@user/writing-voice`
+swamp model and applies it to document generation. The voice data is managed by
+swamp (versioned, audited, updatable via Claude Desktop through the MCP bridge).
 
-## Voice Identity
+## How to Use
 
-<!--
-Define who speaks in your documents. Not the company name, but the persona.
-Are you a technical partner talking to peers? A product company explaining
-capabilities? A consultancy advising on strategy?
+Before generating any client-facing document, retrieve the voice profile from
+the model. Use the method that best matches what you need:
 
-Write down:
-- What authority level the voice carries and where that authority comes from
-- What the voice sounds like when it's working (confident? collaborative?
-  provocative? measured?)
-- What the voice NEVER sounds like (marketing template? committee-approved?
-  purely positive? hedging?)
-- How you refer to yourselves ("we/our" vs. third person vs. brand name)
-- How you close thoughts (callback to reader's interest? call to action?
-  open question?)
+### Full profile
 
-Then define your tiers. The default framework uses three:
+```bash
+swamp model method run <instance-name> get --json
+```
 
-- **Communications** — Full voice. Emails, blog posts, social media, internal
-  comms. Personality, humor, and editorializing are all present.
-- **Documentation** — Voice present but polished. SOWs, case studies, RFP
-  responses, business cases. Confidence and personality remain; casual asides
-  and humor are removed.
-- **Legal** — Formal prose only. MSAs, SLAs, contract language, NDAs.
-  Precision and defensibility over personality.
+### Filtered by tier
 
-Adjust these tiers to match how your organization actually segments its writing.
-You may need more or fewer tiers. The important thing is that the AI knows which
-register to use before it starts generating.
--->
+```bash
+swamp model method run <instance-name> get-tier --input '{"tier": "documentation"}' --json
+```
 
-## Prose Rules
+### Filtered by document type and audience
 
-<!--
-Define the mechanical conventions that shape how your prose reads.
+```bash
+swamp model method run <instance-name> get-document-guide --input '{"documentType": "Proposal", "audience": "Procurement"}' --json
+```
 
-Consider and document your position on each of these:
+## Applying the Profile
 
-- Paragraph-first or bullet-first? (When does prose lead and when do bullets?)
-- Sentence rhythm — long and layered, or short and declarative?
-- How do you handle technical depth for mixed audiences?
-- Are there specific constructions to always avoid? (em dashes, passive voice,
-  certain filler phrases, parallel structure patterns that read as AI-generated)
-- How do you handle inline technical detail vs. footnotes/asides?
-- What's your position on casual language in professional documents?
+The model output contains structured voice data. When generating a document:
 
-Be specific. "Write professionally" is not a prose rule. "Never open a section
-with a bullet list; always lead with a paragraph that contextualizes what
-follows" is a prose rule.
--->
+1. Run the appropriate method above to get the voice profile
+2. Use `voiceIdentity` as the baseline voice for all content
+3. Use the matching `tier` to set the register (full/polished/formal)
+4. Use `proseRules` to govern paragraph structure, sentence rhythm, and
+   constructions to avoid
+5. Use `positioningFramework` to guide how the organization talks about itself
+6. Use the matching `documentType` for structural conventions
+7. Use the matching `audience` for depth and framing adjustments
+8. Check generated content against `antiPatterns` (wrong/right pairs) and
+   `killList` (phrases to remove on sight)
 
-## Positioning Framework
+## Updating the Voice
 
-<!--
-Define how your organization talks about itself, its capabilities, and its
-position relative to customers and competitors.
+Voice updates go through Claude Desktop via the MCP bridge. Desktop edits the
+model instance definition YAML (the `globalArguments` section), then regenerate
+the data output:
 
-Document:
+```bash
+swamp model method run <instance-name> get --json
+```
 
-- Outcome-first or capability-first? (Do you lead with what the customer gets
-  or what you do?)
-- What is the single core differentiator that appears in every important
-  document?
-- How do you handle competitive positioning? (Name competitors? Call out
-  industry failure modes? Ignore the competition entirely?)
-- How do you ground claims? (Specific SLAs, coverage models, metrics? Or
-  general capability statements?)
-- Are there specific differentiators worth stating explicitly when scope
-  warrants it? (No-subcontractor policy, specific certifications, geographic
-  coverage model, etc.)
-- What claims does your organization make that require substantiation rather
-  than assertion?
--->
+## Validation
 
-## Document Structure
+To check the voice profile for completeness and consistency:
 
-<!--
-Define the structural conventions for each document type your organization
-produces. Not full templates — just the rules each document type follows.
+```bash
+swamp model method run <instance-name> validate --json
+```
 
-For each document type (SOW, Proposal, Executive Summary, Case Study, etc.):
+## Reference Documents
 
-- What does it open with?
-- How is the body organized?
-- What sections are mandatory?
-- What's the maximum length?
-- How does it close?
-- What does the reader need to be able to do after reading it?
+Place full-length writing examples in the `references/` subdirectory for
+pattern-matching. The provided templates show the expected format:
 
-Focus on the conventions that make your documents recognizable as yours
-regardless of who drafted them.
--->
-
-## Audience Calibration
-
-<!--
-Define how the voice adjusts for different reader segments.
-
-For each audience your organization commonly writes for:
-
-- What are they reading to understand? (Risk? Cost? Technical fit? Compliance?)
-- How much technical depth is appropriate?
-- What do they notice and what do they skip?
-- What establishes credibility with this audience specifically?
-- What loses credibility with this audience?
-
-Common segments to consider: executive leadership, technical directors and
-architects, procurement and sourcing, front-line technical staff, end users.
-Your segments may differ.
--->
-
-## References
-
-Additional voice examples and document patterns live in the `references/` subdirectory:
-
-- `references/example-full-document.md` — Complete document demonstrating the voice end to end
-- `references/example-annotated-excerpt.md` — Shorter excerpt with detailed annotations explaining what works and why
-- `references/anti-patterns.md` — Wrong/right pairs organized by failure mode
+- `references/example-full-document.md` — Complete document demonstrating voice
+- `references/example-annotated-excerpt.md` — Shorter excerpt with annotations

@@ -1,0 +1,14 @@
+manifestVersion: 1
+name: "@dougschaefer6/writing-voice"
+version: "2026.03.18.2"
+description: "Organizational writing voice management for AI document generation. Stores structured voice profiles with tiered identity, prose rules, positioning framework, document type conventions, audience calibration, anti-patterns, and kill lists. Works with a Claude Code skill for trigger-based context loading."
+repository: https://github.com/dougschaefer6/swamp-writing-voice
+labels:
+  - writing
+  - voice
+  - documents
+  - proposals
+  - ai
+  - content
+models:
+  - writing_voice.ts
