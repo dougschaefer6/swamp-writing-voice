@@ -40,7 +40,20 @@ swamp model method run my-voice add-reference \
   --input-file reference.json --json
 ```
 
-Once populated, the companion Claude Code skill triggers automatically when you're drafting client-facing documents. Claude pulls the voice profile and reference documents from swamp data before generating, so the output reflects your organization's actual voice from the first sentence.
+## How Claude Discovers and Uses the Voice
+
+The extension ships with a `SKILL.md` that you copy into your repo's `.claude/skills/writing-voice/` directory. The skill has trigger words (things like "draft proposal," "executive summary," "RFP response") that cause Claude Code to load it automatically when you ask for client-facing content.
+
+Once loaded, the skill gives Claude a step-by-step execution sequence that it follows without any additional prompting from you:
+
+1. **Find the instance**: Claude runs `swamp model search "voice" --json` to discover the model instance name in your repo
+2. **Load the profile**: Claude runs `swamp data get <instance> voice-profile --json` to pull the full voice definition (identity, tiers, prose rules, positioning, anti-patterns, kill list)
+3. **Load references**: Claude runs `swamp data list <instance> --json`, finds any reference documents, and reads each one for pattern-matching
+4. **Generate with voice applied**: Claude writes the content with all voice rules active, then scans the output against anti-patterns and the kill list before presenting it
+
+The key thing here is that you don't need to explain the voice to Claude or paste instructions into your prompt. The skill handles the entire discovery and loading sequence. Claude reads the structured data, internalizes the rules, and applies them. The only thing that requires your input is populating the voice definition in the first place and adding reference documents over time.
+
+If Claude hasn't seen the extension before, the skill file is self-contained enough that it can execute the full loop on first use. No warmup conversation required.
 
 ## Reference Documents
 
