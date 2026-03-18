@@ -1,8 +1,26 @@
 import { z } from "npm:zod@4";
 
-/**
- * @dougschaefer/writing-voice — Organizational writing voice management
- */
+// @dougschaefer/writing-voice
+//
+// This model exists because every AI on the planet writes like it was trained
+// exclusively on corporate annual reports and has never had an opinion about
+// anything. The voice profile stored here is what makes the difference between
+// "technically correct and completely forgettable" and "sounds like an actual
+// organization with actual people who have actually done the work."
+//
+// Two methods: `get` writes the full voice profile to versioned data, and
+// `add-reference` stores annotated writing examples that the AI can
+// pattern-match against. The reference docs are what close the gap between
+// "follows the rules" and "actually sounds like us," because rules tell you
+// what to do and examples show you what it looks like when you do it well.
+//
+// The schema below is intentionally flat and string-heavy for the big fields
+// (voiceIdentity, proseRules, positioningFramework) because voice definitions
+// are prose, not structured data, and forcing them into nested objects would
+// just make them harder to write and harder to read without adding any
+// validation value. The structured fields (tiers, audiences, documentTypes,
+// antiPatterns) earn their schemas because they're enumerable and the AI
+// needs to be able to index into them by name.
 
 const TierSchema = z.object({
   name: z.string(),
@@ -23,6 +41,11 @@ const DocumentTypeSchema = z.object({
   structure: z.string(),
 }).passthrough();
 
+// Anti-patterns are wrong/right pairs. These are honestly the most useful part
+// of the entire voice definition because telling the AI "don't write like this,
+// write like this instead" with concrete examples turns out to be dramatically
+// more effective than abstract rules about tone and style. If you only populate
+// one section of the voice profile, make it this one.
 const AntiPatternSchema = z.object({
   name: z.string(),
   description: z.string(),
@@ -66,6 +89,10 @@ export const model = {
       lifetime: "infinite",
       garbageCollection: 5,
     },
+    // Reference docs get their own resource spec because they version
+    // independently from the profile. You might update the voice identity
+    // weekly but your reference examples are stable for months, and you don't
+    // want a profile update to cycle out a perfectly good writing sample.
     reference: {
       description: "Reference document for voice pattern-matching",
       schema: z.object({
@@ -77,6 +104,9 @@ export const model = {
     },
   },
   methods: {
+    // Writes the entire voice profile to a versioned resource. Run this after
+    // editing globalArguments so the companion skill can pull structured data
+    // instead of parsing YAML at runtime.
     get: {
       description: "Retrieve the full voice profile",
       arguments: z.object({}),
@@ -110,6 +140,14 @@ export const model = {
         return { dataHandles: [handle] };
       },
     },
+    // Stores a writing example as a versioned data artifact. The content field
+    // is markdown: paste in a real excerpt from your best work, then add
+    // annotations explaining what makes it work and why the AI should
+    // pattern-match against it. The more specific the annotations, the better
+    // the output. "This sentence is good" is useless. "This sentence works
+    // because it names the actual technical work rather than just claiming the
+    // integration exists, so a technical reader can evaluate the claim" is
+    // what actually moves the needle.
     "add-reference": {
       description:
         "Add or update a reference document for voice pattern-matching",
