@@ -1,12 +1,12 @@
 # swamp-writing-voice
 
-Every AI tool on the market writes like it was raised in a boardroom by a committee of people who have never disagreed about anything. You ask it to draft a proposal and you get back something that's technically correct, structurally sound, and so aggressively generic that you could swap your company name for any competitor's and nobody would notice the difference. Your clients notice. Your competitors' clients notice. The evaluators reading your RFP response at 10pm on a Thursday absolutely notice, because they've been reading the same AI-generated prose from every other vendor all week and yours doesn't stand out because it wasn't written by anyone, it was written by everyone, which is the same thing as no one.
+Every AI tool on the market writes like it was trained on corporate annual reports and has never had an opinion about anything. You ask it to draft a proposal and you get back something that's technically correct, structurally sound, and so aggressively generic that you could swap your company name for any competitor's and nobody would notice. Your clients notice. Your competitors' clients notice. The evaluators reading your RFP response at 10pm on a Thursday notice, because they've been reading the same AI-generated prose from every other vendor all week and yours doesn't stand out.
 
 This extension fixes that.
 
 ## What This Actually Does
 
-This is a swamp model that stores your organization's writing voice as structured, versioned, schema-validated data and makes it available to Claude Code at generation time. Not a prompt template you paste at the top of a message and hope sticks. Not a style guide PDF living in a SharePoint folder that nobody has opened since 2024. This is infrastructure, the same way your CI pipeline is infrastructure and your monitoring stack is infrastructure, except instead of enforcing code quality it enforces the thing that actually wins deals, which is sounding like a real organization with real opinions run by people who have actually done the work.
+This is a swamp model that stores your organization's writing voice as structured, versioned, schema-validated data and makes it available to Claude Code at generation time. Not a prompt template you paste at the top of a message and hope sticks. Not a style guide PDF living in a SharePoint folder that nobody has opened since 2024. This is infrastructure, the same way your CI pipeline is infrastructure and your monitoring stack is infrastructure. Except instead of enforcing code quality it enforces the thing that actually wins deals: sounding like a real organization with real opinions run by people who have actually done the work.
 
 The model ships completely empty because the entire point is that your voice is yours. What you get is a structured container with a schema that covers everything an AI needs to stop defaulting to the safest possible version of everything:
 
@@ -15,7 +15,7 @@ The model ships completely empty because the entire point is that your voice is 
 - **Positioning framework** for how your organization talks about itself relative to customers and the competition, outcome-first versus capability-first, whether you name competitors or call out industry failure modes, what your one differentiator is that shows up in every important document
 - **Document type conventions** that define the structural rules for SOWs, proposals, executive summaries, case studies, and business cases so every document is recognizably yours regardless of who or what drafted it
 - **Audience calibration** because your CTO readers need different depth than your procurement evaluators and the AI will absolutely default to one-size-fits-all if you don't tell it otherwise
-- **Anti-patterns** with wrong/right pairs that show the specific failure modes you want to avoid, which honestly turns out to be more effective than telling the AI what to do because it can pattern-match against concrete examples of bad output and steer away from them
+- **Anti-patterns** with wrong/right pairs that show the specific failure modes you want to avoid. These turn out to be more effective than telling the AI what to do, because it can pattern-match against concrete examples of bad output and steer away from them
 - **Kill list** of phrases that get removed on sight because they're either reliable AI writing tells, empty filler words, or constructions your organization would never use
 
 ## How It Works
@@ -40,7 +40,7 @@ swamp model method run my-voice add-reference \
   --input-file reference.json --json
 ```
 
-Once populated, the companion Claude Code skill triggers automatically when you're drafting client-facing documents. Claude pulls the voice profile and reference documents from swamp data before generating, so the output reflects your organization's actual voice from the first sentence rather than the generic AI default that sounds like it was focus-grouped into oblivion.
+Once populated, the companion Claude Code skill triggers automatically when you're drafting client-facing documents. Claude pulls the voice profile and reference documents from swamp data before generating, so the output reflects your organization's actual voice from the first sentence.
 
 ## Reference Documents
 
@@ -73,9 +73,9 @@ Voice profiles keep 5 versions, references keep 3, both with infinite lifetime. 
 
 ## Why This Exists
 
-Most AI writing tools treat voice as a prompt engineering problem and most organizations treat voice as a marketing problem, and neither of those approaches actually works when you have a team of people using AI to generate documents that all need to sound like the same organization wrote them. You end up with five different people pasting five different prompt fragments and getting five different voices, none of which sound like yours, and the output quality degrades in direct proportion to how many people are generating content.
+Most AI writing tools treat voice as a prompt engineering problem and most organizations treat voice as a marketing problem. Neither approach works when you have a team of people using AI to generate documents that all need to sound like the same organization wrote them. You end up with five different people pasting five different prompt fragments and getting five different voices, none of which sound like yours.
 
-This extension treats voice as what it actually is, which is an infrastructure problem. The definition lives in swamp as structured data with a schema and methods and versioning. It loads when relevant, distributes through git, evolves conversationally through the Desktop bridge, and every version is auditable. The AI isn't guessing at your voice from a prompt fragment, it's reading a complete structured definition backed by real examples of your writing at its best, and the output quality reflects that.
+This extension treats voice as what it actually is: an infrastructure problem. The definition lives in swamp as structured data with a schema, methods, and versioning. It loads when relevant, distributes through git, evolves conversationally through the Desktop bridge, and every version is auditable. The AI isn't guessing at your voice from a prompt fragment. It's reading a complete structured definition backed by real examples of your writing at its best.
 
 ## License
 

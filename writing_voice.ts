@@ -2,9 +2,9 @@ import { z } from "npm:zod@4";
 
 // @dougschaefer/writing-voice
 //
-// This model exists because every AI on the planet writes like it was trained
-// exclusively on corporate annual reports and has never had an opinion about
-// anything. The voice profile stored here is what makes the difference between
+// This model exists because every AI writes like it was trained on corporate
+// annual reports and has never had an opinion about anything. The voice profile
+// stored here is what makes the difference between
 // "technically correct and completely forgettable" and "sounds like an actual
 // organization with actual people who have actually done the work."
 //
@@ -41,11 +41,10 @@ const DocumentTypeSchema = z.object({
   structure: z.string(),
 }).passthrough();
 
-// Anti-patterns are wrong/right pairs. These are honestly the most useful part
-// of the entire voice definition because telling the AI "don't write like this,
-// write like this instead" with concrete examples turns out to be dramatically
-// more effective than abstract rules about tone and style. If you only populate
-// one section of the voice profile, make it this one.
+// Anti-patterns are wrong/right pairs. These turn out to be more effective than
+// abstract rules about tone and style, because the AI can pattern-match against
+// concrete examples of what not to do. If you only populate one section of the
+// voice profile, make it this one.
 const AntiPatternSchema = z.object({
   name: z.string(),
   description: z.string(),
