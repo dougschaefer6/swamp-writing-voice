@@ -25,31 +25,17 @@ swamp (versioned, audited, updatable via Claude Desktop through the MCP bridge).
 ## How to Use
 
 Before generating any client-facing document, retrieve the voice profile from
-the model. Use the method that best matches what you need:
-
-### Full profile
+the model:
 
 ```bash
 swamp model method run <instance-name> get --json
-```
-
-### Filtered by tier
-
-```bash
-swamp model method run <instance-name> get-tier --input '{"tier": "documentation"}' --json
-```
-
-### Filtered by document type and audience
-
-```bash
-swamp model method run <instance-name> get-document-guide --input '{"documentType": "Proposal", "audience": "Procurement"}' --json
 ```
 
 ## Applying the Profile
 
 The model output contains structured voice data. When generating a document:
 
-1. Run the appropriate method above to get the voice profile
+1. Run the method above to get the voice profile
 2. Use `voiceIdentity` as the baseline voice for all content
 3. Use the matching `tier` to set the register (full/polished/formal)
 4. Use `proseRules` to govern paragraph structure, sentence rhythm, and
@@ -60,6 +46,23 @@ The model output contains structured voice data. When generating a document:
 8. Check generated content against `antiPatterns` (wrong/right pairs) and
    `killList` (phrases to remove on sight)
 
+## Reference Documents
+
+All writing examples are stored as versioned model data in `.swamp/data/`.
+To access the voice profile and reference documents:
+
+```bash
+# Full voice profile
+swamp data get <instance-name> voice-profile --json
+
+# Reference documents (annotated writing examples for pattern-matching)
+swamp data list <instance-name> --json
+
+# Add or update a reference document
+swamp model method run <instance-name> add-reference --input-file reference.json --json
+# where reference.json contains: {"name": "doc-name", "content": "markdown content..."}
+```
+
 ## Updating the Voice
 
 Voice updates go through Claude Desktop via the MCP bridge. Desktop edits the
@@ -69,19 +72,3 @@ the data output:
 ```bash
 swamp model method run <instance-name> get --json
 ```
-
-## Validation
-
-To check the voice profile for completeness and consistency:
-
-```bash
-swamp model method run <instance-name> validate --json
-```
-
-## Reference Documents
-
-Place full-length writing examples in the `references/` subdirectory for
-pattern-matching. The provided templates show the expected format:
-
-- `references/example-full-document.md` — Complete document demonstrating voice
-- `references/example-annotated-excerpt.md` — Shorter excerpt with annotations

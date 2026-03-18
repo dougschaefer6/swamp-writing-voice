@@ -1,78 +1,85 @@
 # swamp-writing-voice
 
-A swamp skill that gives your AI-generated documents an actual voice instead of the default "committee-approved, personality-free, could-have-been-written-by-literally-anyone" output that every LLM produces out of the box.
+A swamp extension that gives your AI-generated documents an actual voice instead of the default "committee-approved, personality-free, could-have-been-written-by-literally-anyone" output that every LLM produces out of the box.
 
 ## The Problem
 
-If you're using Claude Code (or any AI tooling) to draft client-facing documents, proposals, SOWs, case studies, or RFP responses, you've probably noticed that the output reads like it was written by a very competent intern who has never met a customer and has no opinions about anything. It's technically correct and completely forgettable. Every sentence could be swapped for a synonym and mean the same nothing, and your clients can tell, because they're getting the same AI-generated prose from every other vendor responding to the same RFP.
+If you're using Claude Code or any AI tooling to draft client-facing documents, you've probably noticed that the output reads like it was written by a very competent intern who has never met a customer and has no opinions about anything. It's technically correct and completely forgettable. Every sentence could be swapped for a synonym and mean the same nothing, and your clients can tell, because they're getting the same AI-generated prose from every other vendor responding to the same RFP.
 
 The issue isn't that the AI can't write well. It's that it doesn't know what your organization sounds like, what your positioning is, what your strong opinions are, or what your readers expect from you specifically. Without that context, it defaults to the safest possible version of everything, which is the version that sounds like everyone else.
 
 ## What This Is
 
-This is a swamp skill that provides the scaffolding for defining your organization's writing voice in a way that Claude Code can actually use at generation time. It's not a prompt template and it's not a style guide PDF that sits in a SharePoint folder and gets ignored. It's a structured skill file that lives in your swamp repo, loads automatically when you're drafting documents, and shapes the output from the first sentence.
+This is a swamp extension model that stores your organization's writing voice as structured, versioned data that Claude Code can pull at generation time. It's not a prompt template and it's not a style guide PDF that sits in a SharePoint folder and gets ignored. It's a model with a schema, methods, and data outputs that lives in your swamp repo, loads automatically when the companion skill triggers, and shapes the output from the first sentence.
 
-The skill ships empty. There is no default voice in here, because the entire point is that your voice is yours and nobody else's. What you get is:
+The model ships empty. There is no default voice in here, because the entire point is that your voice is yours and nobody else's. What you get is a structured container for:
 
-- A SKILL.md with five sections (Voice Identity, Prose Rules, Positioning Framework, Document Structure, Audience Calibration) and instructional comments explaining what goes in each one and why it matters
-- A three-tier voice framework (Communications, Documentation, Legal) that lets you calibrate formality by document type without maintaining three separate voice guides
-- Reference document templates for annotated writing samples, complete document examples, and anti-pattern catalogs with wrong/right pairs
-- A setup guide for using Claude Desktop's MCP bridge to push voice content directly into the skill files, so the person who owns the voice (usually a founder, CTO, or head of marketing) can maintain it without touching the repo directly
+- **Voice identity** and a three-tier register framework (Communications, Documentation, Legal) so you can calibrate formality by document type without maintaining three separate voice guides
+- **Prose rules** that govern sentence rhythm, paragraph structure, and the mechanical conventions that separate your writing from the AI default
+- **Positioning framework** that defines how your organization talks about itself, its customers, and its competitors
+- **Document type conventions** for SOWs, proposals, executive summaries, case studies, and business cases
+- **Audience calibration** so the voice adjusts appropriately when writing for a CTO versus a procurement evaluator
+- **Anti-patterns** with wrong/right pairs that show the specific failure modes you want to avoid, which turns out to be more effective than telling the AI what to do
+- **Kill list** of phrases that get removed on sight because they're either AI writing tells, empty filler, or words your organization would never use
 
 ## How It Works
 
-Install the skill into your swamp repo. Fill in the SKILL.md sections with your organization's actual voice, positioning, and document conventions. Add reference documents with real examples of your writing at its best, annotated with explanations of what makes each example work. Add anti-patterns with wrong/right pairs showing the specific failure modes you want to avoid.
-
-Once populated, the skill triggers automatically when you ask Claude Code to draft proposals, SOWs, executive summaries, RFP responses, case studies, or any other client-facing document. Claude reads the voice definition and reference examples before generating, so the output reflects your organization's actual voice rather than generic AI prose.
-
-The skill also supports a workflow where Claude Desktop maintains the voice content through the MCP bridge to Claude Code. This means the person who defines the voice can refine it conversationally ("that's too formal," "we'd never say it that way," "add this to the anti-patterns list") and have those changes written directly into the skill files in the repo. The repo remains the single source of truth, Desktop is just the editing interface, and every team member who pulls the repo gets the updated voice immediately.
-
-## Installation
+Install the extension into your swamp repo, create a model instance, and populate the global arguments with your voice definition. The `get` method writes the full voice profile as a versioned resource. The `add-reference` method stores annotated writing examples as data artifacts that the companion skill can retrieve for pattern-matching.
 
 ```bash
+# Install the extension
 swamp extension install @dougschaefer6/writing-voice
+
+# Create an instance
+swamp model create @user/writing-voice my-voice --json
+
+# Edit the global arguments with your voice definition
+swamp model edit my-voice
+
+# Write the voice profile to data
+swamp model method run my-voice get --json
+
+# Add reference documents (annotated examples of your best writing)
+swamp model method run my-voice add-reference \
+  --input-file reference.json --json
 ```
 
-This drops the skill scaffold into your repo's `.claude/skills/writing-voice/` directory. Everything is placeholder content until you fill it in.
+Once populated, the companion Claude Code skill (`SKILL.md`) triggers automatically when you ask Claude Code to draft proposals, SOWs, executive summaries, RFP responses, case studies, or any other client-facing document. Claude pulls the voice profile and reference documents from swamp data before generating, so the output reflects your organization's actual voice rather than generic AI prose.
 
-## Filling It In
+## The Reference Document Workflow
 
-The SKILL.md has five sections, each with instructional comments. Here's what goes where:
+This is honestly the part that makes the biggest difference in output quality. The voice identity and prose rules get you maybe 70% of the way there, but the reference documents are what close the gap, because the AI can pattern-match against real examples of your writing and understand what the voice sounds like in practice, not just what the rules say in theory.
 
-**Voice Identity** is the foundation. Write down who speaks in your documents (your organization as a technical partner? a product company? a consultancy?), what authority level the voice carries, what it sounds like when it's working, and what it never sounds like under any circumstances. Define your tiers here too, the skill ships with three (Communications, Documentation, Legal) but you can adjust those to match how your organization actually segments its writing.
+Reference documents are stored as versioned data artifacts in swamp. Each one is a markdown file with the actual writing sample followed by annotations explaining what makes it work. The `add-reference` method accepts a name and content, and stores it as a resource that persists across sessions and distributes to anyone who pulls the repo.
 
-**Prose Rules** are the mechanical conventions. Paragraph-first or bullet-first? Long chained sentences or short declaratives? How do you handle technical depth for mixed audiences? Are there specific constructions you want to avoid (em dashes, passive voice, certain phrases)? This section is where you codify the stuff that a good editor would enforce but that AI doesn't know unless you tell it.
+Good reference documents include:
 
-**Positioning Framework** is how your organization talks about itself relative to customers and competitors. Outcome-first or capability-first? Do you name competitors or call out industry failure modes? What's the one differentiator that shows up in every important document? Write it here so it shows up consistently.
-
-**Document Structure** defines the conventions for each document type you produce. Not full templates, just the structural rules: what a SOW opens with, how an RFP response is organized, what an executive summary includes, how long a case study should be. These are the guardrails that keep every document recognizable as yours regardless of who (or what) drafted it.
-
-**Audience Calibration** is how the voice adjusts by reader. Your CTO audience gets different depth than your procurement audience. Write down the specific adjustments for each audience segment your organization serves, so the AI doesn't default to one-size-fits-all.
-
-## Reference Documents
-
-The `references/` subdirectory ships with three templates:
-
-- **example-full-document.md** — Template for a complete document that demonstrates your voice end to end. Pick your best recent deliverable, paste it in, and annotate what makes it work.
-- **example-annotated-excerpt.md** — Template for a shorter excerpt with detailed annotations. Good for showing specific voice mechanics (sentence rhythm, positioning language, how you handle complexity).
-- **anti-patterns.md** — Template for wrong/right pairs organized by failure mode. This is honestly the most useful reference file because it tells the AI what not to do, which turns out to be more effective than telling it what to do.
+- A full-length document that demonstrates the voice end to end (a real SOW, a real proposal letter, a real case study)
+- Shorter annotated excerpts that call out specific voice mechanics (how you handle a deviation from an RFP requirement, how you frame competitive positioning without naming competitors, how you acknowledge complexity before landing the outcome)
+- Examples that show the voice working at different tiers (a casual Slack message versus a polished proposal versus formal contract language)
 
 ## The Desktop Bridge Workflow
 
-If you're running Claude Desktop connected to Claude Code via the MCP bridge (`claude mcp serve`), the person who owns your organization's voice can maintain the skill files conversationally. The workflow looks like this:
+If you're running Claude Desktop connected to Claude Code via the MCP bridge (`claude mcp serve`), the person who owns your organization's voice can maintain the definition conversationally. Have a conversation with Desktop about what you like, what you hate, what your strong opinions are, how you'd phrase something differently than the AI's default, and tell Desktop to write those preferences into the model definition. The changes are immediately available to Claude Code and to anyone who pulls the repo.
 
-1. Have a conversation with Claude Desktop about your writing voice, what you like, what you hate, what your strong opinions are, how you'd phrase something differently than the AI's default
-2. Tell Desktop to write those preferences into the skill files in your repo (it can Edit files directly through the MCP bridge)
-3. The changes are immediately available to Claude Code and to anyone who pulls the repo
-4. When the voice evolves (and it will), repeat the process. The repo always has the current version.
+This means the voice definition isn't a one-time setup that slowly drifts out of date. It's a living data set maintained by the person closest to it, with version control and audit trail built in because it's swamp data in a git repo.
 
-This means the voice definition isn't a one-time setup that slowly drifts out of date. It's a living document maintained by the person closest to it, using a conversational interface, with version control built in because it's just files in a git repo.
+## Schema
+
+The model uses `globalArguments` for the voice definition and exposes two methods:
+
+| Method | Description | Input |
+|---|---|---|
+| `get` | Write the full voice profile to a versioned resource | None |
+| `add-reference` | Store an annotated writing example as a data artifact | `name` (string), `content` (string) |
+
+The voice profile resource and reference documents are both stored with `infinite` lifetime and garbage collection (5 versions for profiles, 3 for references), so you get a full revision history of how your voice evolved over time.
 
 ## Why This Exists
 
 Most AI writing tools treat voice as a prompt engineering problem. You paste a paragraph of instructions at the top of your prompt, hope the model follows them, and fix the output by hand when it doesn't. That works for one-off tasks but it falls apart completely when you have a team of people using AI to generate documents that all need to sound like the same organization wrote them.
 
-This skill treats voice as an infrastructure problem. The voice definition lives in the repo alongside your other operational definitions, it loads automatically when relevant, it's version-controlled, it distributes to the team through git, and it can be maintained conversationally by the person who actually owns the voice. That's a fundamentally different approach and in our experience it produces fundamentally better output.
+This extension treats voice as an infrastructure problem. The voice definition lives in swamp as structured, versioned, schema-validated data. It loads automatically when relevant, it distributes to the team through git, it can be maintained conversationally through the Desktop bridge, and every version is auditable. That's a fundamentally different approach, and in our experience it produces fundamentally better output, because the AI isn't guessing at your voice from a prompt fragment, it's reading a complete, structured definition backed by real examples of your writing at its best.
 
 ## License
 
