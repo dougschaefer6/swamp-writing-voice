@@ -1,14 +1,13 @@
 manifestVersion: 1
-name: "@dougschaefer6/writing-voice"
-version: "2026.03.18.3"
-description: "Organizational writing voice management for AI document generation. Stores structured voice profiles with tiered identity, prose rules, positioning framework, document type conventions, audience calibration, anti-patterns, and kill lists. Reference documents stored as versioned data artifacts via add-reference method."
+name: "@dougschaefer/writing-voice"
+version: "2026.03.18.4"
+description: "Organizational writing voice management — tone tiers, audience targeting, document type templates, anti-patterns, and kill-list enforcement for consistent client-facing communications."
 repository: https://github.com/dougschaefer6/swamp-writing-voice
 labels:
   - writing
   - voice
-  - documents
-  - proposals
-  - ai
-  - content
+  - tone
+  - documentation
+  - professional-services
 models:
-  - writing_voice.ts
+  - writing_voice/voice.ts
