@@ -1,8 +1,11 @@
 manifestVersion: 1
 name: "@dougschaefer/writing-voice"
-version: "2026.03.29.1"
+version: "2026.04.27.1"
 description: "Organizational writing voice management — tone tiers, audience targeting, document type templates, anti-patterns, and kill-list enforcement for consistent client-facing communications."
 repository: https://github.com/dougschaefer6/swamp-writing-voice
+additionalFiles:
+  - README.md
+  - LICENSE.txt
 labels:
   - writing
   - voice
