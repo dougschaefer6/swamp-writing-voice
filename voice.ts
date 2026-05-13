@@ -77,6 +77,17 @@ const VoiceProfileSchema = z.object({
   killList: z.array(z.string()),
 }).passthrough();
 
+/**
+ * `@dougschaefer/writing-voice` model — captures an organization's
+ * documented writing voice as a structured, queryable profile.
+ * The profile encodes tone tiers, target audiences, document-type
+ * templates, anti-patterns, and a kill list of banned terms. Get
+ * returns the full profile for use as upstream context to any
+ * AI-generation step. Reference document handling allows
+ * pattern-matched lookups for canonical examples (proposals, SOWs,
+ * incident reports) so generated documents inherit not just the
+ * tone but the structural conventions of past good work.
+ */
 export const model = {
   type: "@dougschaefer/writing-voice",
   version: "2026.03.18.3",
